@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require("express")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
@@ -67,7 +68,7 @@ router.post("/signup", async (req, res) => {
             res.status(400).json({ error: "Incorrect password. Try again!" })
         }
 
-        // provide a digital id/token
+        // generate a digital id/token
         const payload = { userId: user.id } 
         const secretKey = process.env.JWT_SECRET
 
