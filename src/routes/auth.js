@@ -32,9 +32,7 @@ router.post("/signup", async (req, res) => {
             data: {
                 email,
                 password: hashedPw,
-                subscription: { 
-                    create: {}
-                }
+                subscription: { create: {} }
             },
         })
 
@@ -45,5 +43,43 @@ router.post("/signup", async (req, res) => {
         res.status(500).json({ error: "Something went wrong" })
     }
   });
+
+
+  // LOG IN
+
+  router.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body
+
+        // find user with that email
+        const user = await prisma.user.findUnique({
+            where: { email },
+            include: { subscription: true }
+        })
+        if (!user) {
+            res.status(400).json({ error: "User doesn't exist. Please sign up"})
+        }
+
+        // check if password provided matched with one stored in db
+        const dbPw = user.password
+        const match = await bcrypt.compare(password, dbPw)
+        if (!match) {
+            res.status(400).json({ error: "Incorrect password. Try again!" })
+        }
+
+        // provide a digital id/token
+        const payload = { userId: user.id } 
+        const secretKey = process.env.JWT_SECRET
+
+        const token = jwt.sign( payload, secretKey, { expiresIn: "7d" })
+
+        // return the jwt to the frontend for use in further requests
+        res.json({ token })
+
+    } catch(error) {
+        res.status(500).json({ error: "Something went wrong" })
+    }
+
+  })
 
   module.exports = router;
