@@ -2,7 +2,7 @@ require("dotenv").config()
 const express = require("express")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
-const { PrismaClient } = require("@prisma/client")
+const { PrismaClient } = require("../generated")
 
 const prisma = new PrismaClient() // use prisma to read and write data in your db
 const router = express.Router()
@@ -57,6 +57,7 @@ router.post("/signup", async (req, res) => {
             where: { email },
             include: { subscription: true },
         })
+        console.log(user)
         if (!user) {
             res.status(400).json({ error: "User doesn't exist. Please sign up"})
         }

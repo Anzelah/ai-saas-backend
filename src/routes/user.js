@@ -1,5 +1,5 @@
 const express = require("express")
-const { PrismaClient } = require("@prisma/client")
+const { PrismaClient } = require("../generated")
 const authMiddleware = require("../middleware/auth")
 
 const prisma = new PrismaClient()
