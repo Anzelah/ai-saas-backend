@@ -55,7 +55,7 @@ router.post("/signup", async (req, res) => {
         // find user with that email
         const user = await prisma.user.findUnique({
             where: { email },
-            include: { subscription: true }
+            include: { subscription: true },
         })
         if (!user) {
             res.status(400).json({ error: "User doesn't exist. Please sign up"})
