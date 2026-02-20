@@ -5,6 +5,7 @@ const PORT = process.env.PORT || 5000
 
 const authRoutes = require("./routes/auth")
 const userRoutes = require("./routes/user")
+const aiRoutes = require("./routes/ai")
 
 const app = express()
 
@@ -12,6 +13,7 @@ app.use(cors())
 app.use(express.json())
 app.use("/auth", authRoutes)
 app.use("/user", userRoutes)
+app.use("/ai", aiRoutes)
 
 
 app.get("/", (req, res) => {
