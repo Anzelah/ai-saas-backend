@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 const router = express.Router()
 
 // Protected route to load user info. Middleware is called
-router.get("/me", authMiddleware), async (req, res) => {
+router.get("/me", authMiddleware, async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
             where: { id: req.userId },
@@ -28,6 +28,6 @@ router.get("/me", authMiddleware), async (req, res) => {
         console.error(error)
         res.status(500).json({ error: "Server error" })
     }
-}
+})
 
 module.exports = router;
