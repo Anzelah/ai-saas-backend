@@ -22,6 +22,7 @@ model User {
   updatedAt      DateTime @updatedAt
 
   subscription   Subscription?
+  aiRequests     AIRequest[]
 }
 
 model Subscription {
@@ -29,6 +30,15 @@ model Subscription {
   plan         String   @default("FREE")
   credits      Int      @default(10)
   userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model AIRequest {
+  id           String   @id @default(uuid())
+  prompt       String
+  response     String
+  userId       String
   user         User     @relation(fields: [userId], references: [id])
   createdAt    DateTime @default(now())
 }
