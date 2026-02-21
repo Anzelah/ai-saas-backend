@@ -29,8 +29,7 @@ router.post("/generate", authMiddleware, async (req, res) => {
         }
 
         // check the credits available
-        const credits = subscription.credits
-        if (credits <= 0) {
+        if (subscription.credits <= 0) {
             res.status(403).json({ error: "No credits remaining"})
         }
 
@@ -39,20 +38,31 @@ router.post("/generate", authMiddleware, async (req, res) => {
         const aiResponse = `Ai response to: ${prompt}`
 
         // Save request in db for history + record for product usage
-        await prisma.aIRequest.create({
-            data: { prompt,
+        await prisma.aiRequest.create({
+            data: {
+                prompt,
                 response: aiResponse,
                 userId: user.id,
             },
         })
 
         // backend deducts credits
+        const updateSubscriptions = await prisma.subscription.update({
+            where: { userId: user.id },
+            data: {
+                credits: { decrement: 1 },
+            },
+        })
 
-
-
+        //backend returns response to user
+        res.json({ 
+            response: aiResponse,
+            credits: updateSubscriptions.credits,
+        })
 
     } catch(error) {
-
+        console.error(error)
+        res.status(500).json({ error: "Server error" })
     }
 })
 
