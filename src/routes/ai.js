@@ -38,7 +38,7 @@ router.post("/generate", authMiddleware, async (req, res) => {
         const aiResponse = `Ai response to: ${prompt}`
 
         // Save request in db for history + record for product usage
-        await prisma.aiRequest.create({
+        await prisma.aIRequest.create({
             data: {
                 prompt,
                 response: aiResponse,
