@@ -10,7 +10,7 @@ router.post("/generate", authMiddleware, async (req, res) => {
     try { 
         // Check the user has sent a prompt
         const { prompt } = req.body
-        if(!prompt) {
+        if(!prompt || prompt.trim().length === 0) {
             return res.json(400).res.json({ error: "Prompt is required"})
         }
         
@@ -20,13 +20,13 @@ router.post("/generate", authMiddleware, async (req, res) => {
             include: { subscription: true },
         })
         if (!user) {
-            res.status(400).json({ error: "User not found"})
+            res.status(404).json({ error: "User not found"})
         }
 
         // fetch the user's subscription
         const subscription = user.subscription
         if (!subscription) {
-            res.status(400).json({ error: "Subscription not found"})
+            res.status(404).json({ error: "Subscription not found"})
         }
 
         // check the credits available
@@ -41,7 +41,7 @@ router.post("/generate", authMiddleware, async (req, res) => {
             aiResponse = await generateAIResponse(prompt)
         } catch(error) {
             if (error.message === "AI_SERVICE_ERROR") {
-                res.status(500).json({ error: "AI Service Unavailable"})
+                res.status(500).json({ error: "AI Service Unavailable. Please try again later"})
             }
             if (error.message === "OPENAI_KEY_ERROR") {
                 res.status(501).json({ error: "Something went wrong" })
