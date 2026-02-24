@@ -1,6 +1,7 @@
 const express = require("express")
 const { PrismaClient } = require("../generated")
 const authMiddleware = require("../middleware/auth")
+const { generateAIResponse } = require("../services/aiService")
 
 const prisma = new PrismaClient()
 const router = express.Router()
@@ -13,7 +14,7 @@ router.post("/generate", authMiddleware, async (req, res) => {
             return res.json(400).res.json({ error: "Prompt is required"})
         }
         
-        // find the user and ssubscriptions from db
+        // find the user and subscriptions from db
         const user = await prisma.user.findUnique({
             where: { id: req.userId },
             include: { subscription: true },
@@ -35,7 +36,23 @@ router.post("/generate", authMiddleware, async (req, res) => {
 
         // User has subscription with enough credits, now backend can generate a response
         // temporary fake response for testing
-        const aiResponse = `Ai response to: ${prompt}`
+        let aiResponse
+        try {
+            aiResponse = await generateAIResponse(prompt)
+        } catch(error) {
+            if (error.message === "AI_SERVICE_ERROR") {
+                res.status(500).json({ error: "AI Service Unavailable"})
+            }
+            if (error.message === "OPENAI_KEY_ERROR") {
+                res.status(501).json({ error: "Something went wrong" })
+            }
+            //unexpected error
+            console.error("Unexpected Error:", error)
+            res.status(500).json({ error: "Server error" })
+        }
+        // to add a thorough error handling logic according to error message received from ai
+        // might not need apikey error handling because it will automatically crash on project initialization
+        
 
         // Save request in db for history + record for product usage
         await prisma.aIRequest.create({
