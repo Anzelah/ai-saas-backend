@@ -31,7 +31,7 @@ router.post("/generate", authMiddleware, async (req, res) => {
 
         // check the credits available
         if (subscription.credits <= 0) {
-            res.status(403).json({ error: "No credits remaining"})
+            res.status(429).json({ error: "You hit your usage limit. Please wait for reset or upgrade your plan"})
         }
 
         // User has subscription with enough credits, now backend can generate a response
