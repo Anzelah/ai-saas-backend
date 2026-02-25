@@ -89,15 +89,19 @@ router.get("/history", authMiddleware, async (req, res) => {
         const userHistory = await prisma.aIRequest.findMany({
             where: { 
                 userId: req.userId,
-                response: { not: null },
             }, 
+            select: {
+                prompt: true,
+                response: true,
+                createdAt: true,
+            },
             orderBy: {
-                createdAt: { sort: 'desc' },
+                createdAt: 'desc',
             },
             take: 20,
         })
 
-        return userHistory
+        res.json({userHistory})
     } catch(error) {
         console.error(error)
         res.status(500).json({ error: "Failed to fetch history" })
