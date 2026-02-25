@@ -101,7 +101,7 @@ router.get("/history", authMiddleware, async (req, res) => {
             take: 20,
         })
 
-        res.json({userHistory})
+        res.json(userHistory)
     } catch(error) {
         console.error(error)
         res.status(500).json({ error: "Failed to fetch history" })
