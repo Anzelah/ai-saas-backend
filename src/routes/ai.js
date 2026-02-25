@@ -86,10 +86,22 @@ router.post("/generate", authMiddleware, async (req, res) => {
 // Retrieve a users post history
 router.get("/history", authMiddleware, async (req, res) => {
     try {
-        const userHistory = 
+        const userHistory = await prisma.aIRequest.findMany({
+            where: { 
+                userId: req.userId,
+                response: { not: null },
+            }, 
+            orderBy: {
+                createdAt: { sort: 'desc' },
+            },
+            take: 20,
+        })
 
+        return userHistory
     } catch(error) {
-
+        console.error(error)
+        res.status(500).json({ error: "Failed to fetch history" })
     }
 })
+
 module.exports = router;
