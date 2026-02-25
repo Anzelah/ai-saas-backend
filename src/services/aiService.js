@@ -11,7 +11,7 @@ const openai = new OpenAI({ apiKey })
 // Call openai apito generate a response based on the prompt provided
 async function generateAIResponse(prompt) {
     try {
-        const completion  = await openai.chat.completions.create({
+        const completion  = await openai.responses.create({
             model: "gpt-4o-mini",
             messages: [
                 { role: "system", content: "You are an expert entepreneur" },

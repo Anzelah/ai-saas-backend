@@ -83,4 +83,13 @@ router.post("/generate", authMiddleware, async (req, res) => {
     }
 })
 
+// Retrieve a users post history
+router.get("/history", authMiddleware, async (req, res) => {
+    try {
+        const userHistory = 
+
+    } catch(error) {
+
+    }
+})
 module.exports = router;
