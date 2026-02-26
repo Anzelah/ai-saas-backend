@@ -20,18 +20,18 @@ router.post("/generate", authMiddleware, async (req, res) => {
             include: { subscription: true },
         })
         if (!user) {
-            res.status(404).json({ error: "User not found"})
+            return res.status(404).json({ error: "User not found"})
         }
 
         // fetch the user's subscription
         const subscription = user.subscription
         if (!subscription) {
-            res.status(404).json({ error: "Subscription not found"})
+            return res.status(404).json({ error: "Subscription not found"})
         }
 
         // check the credits available
         if (subscription.credits <= 0) {
-            res.status(429).json({ error: "You hit your usage limit. Please wait for reset or upgrade your plan"})
+            return res.status(429).json({ error: "You hit your usage limit. Please wait for reset or upgrade your plan"})
         }
 
         // Call openAI
@@ -40,10 +40,10 @@ router.post("/generate", authMiddleware, async (req, res) => {
             aiResponse = await generateAIResponse(prompt)
         } catch(error) {
             if (error.message === "AI_SERVICE_ERROR") {
-                res.status(500).json({ error: "AI Service Unavailable. Please try again later"})
+                return res.status(500).json({ error: "AI Service Unavailable. Please try again later"})
             }
             if (error.message === "OPENAI_KEY_ERROR") {
-                res.status(501).json({ error: "Something went wrong" })
+                return res.status(501).json({ error: "Something went wrong" })
             }
             //unexpected error
             console.error("Unexpected Error:", error)
