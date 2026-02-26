@@ -34,8 +34,7 @@ router.post("/generate", authMiddleware, async (req, res) => {
             res.status(429).json({ error: "You hit your usage limit. Please wait for reset or upgrade your plan"})
         }
 
-        // User has subscription with enough credits, now backend can generate a response
-        // temporary fake response for testing
+        // Call openAI
         let aiResponse
         try {
             aiResponse = await generateAIResponse(prompt)
@@ -99,8 +98,8 @@ router.get("/history", authMiddleware, async (req, res) => {
                 userId: req.userId,
             }, 
             select: {
+                id: true,
                 prompt: true,
-                response: true,
                 createdAt: true,
             },
             orderBy: {
@@ -115,11 +114,49 @@ router.get("/history", authMiddleware, async (req, res) => {
             total, 
             totalPages: Math.ceil(total/limit),
             data: userHistory })
-            
+
     } catch(error) {
         console.error(error)
         res.status(500).json({ error: "Failed to fetch history" })
     }
 })
 
+// Expand a specific response from listed history
+router.get("/:id", authMiddleware, async(req, res) => {
+    try {
+        const requestId = req.params.id
+        //check if request id is provided
+        if(!requestId) {
+            return res.status(400).json({ error: "This field can't be empty"})
+        }
+
+        // fetch request from db
+        const request = await prisma.aIRequest.findUnique({
+            where: {
+                id: requestId,
+            },
+        })
+
+        // check if request exists
+        if (!request) {
+            return res.status(404).json({ error: "Request not found"})
+        }
+
+        // check if the logged in user owns this request
+        if (request.userId !== req.userId) {
+            return res.status(403).json({ error: "Forbidden"})
+        }
+
+        return res.json({
+            id: request.id,
+            prompt: request.prompt,
+            response: request.response,
+            createdAt: request.createdAt
+        })
+
+    } catch(error) {
+        console.error(error)
+        return res.status(500).json({ error: "Failed to fetch the request"})
+    }
+})
 module.exports = router;
