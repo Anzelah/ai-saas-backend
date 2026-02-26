@@ -86,6 +86,13 @@ router.post("/generate", authMiddleware, async (req, res) => {
 // Retrieve a users post history
 router.get("/history", authMiddleware, async (req, res) => {
     try {
+        // check if user requested a page/limit. otherwise, default to our values 
+        const page = parseInt(req.query.page) || 1
+        const limit = parseInt(req.query.limit) || 10
+
+        // calculate the offset(skip value)
+        const offset = (page - 1) * limit
+
         const userHistory = await prisma.aIRequest.findMany({
             where: { 
                 userId: req.userId,
@@ -98,10 +105,11 @@ router.get("/history", authMiddleware, async (req, res) => {
             orderBy: {
                 createdAt: 'desc',
             },
-            take: 20,
+            skip: offset,
+            take: limit,
         })
 
-        res.json(userHistory)
+        res.json({ page, data: userHistory })
     } catch(error) {
         console.error(error)
         res.status(500).json({ error: "Failed to fetch history" })
