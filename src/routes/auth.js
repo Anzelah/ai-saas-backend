@@ -57,16 +57,15 @@ router.post("/signup", async (req, res) => {
             where: { email },
             include: { subscription: true },
         })
-        console.log(user)
         if (!user) {
-            res.status(400).json({ error: "User doesn't exist. Please sign up"})
+            return res.status(400).json({ error: "User doesn't exist. Please sign up"})
         }
 
         // check if password provided matched with one stored in db
         const dbPw = user.password
         const match = await bcrypt.compare(password, dbPw)
         if (!match) {
-            res.status(400).json({ error: "Incorrect password. Try again!" })
+            return res.status(400).json({ error: "Incorrect password. Try again!" })
         }
 
         // generate a digital id/token
