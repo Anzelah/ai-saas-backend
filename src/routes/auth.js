@@ -22,7 +22,7 @@ router.post("/signup", async (req, res) => {
             where: { email },
         })
         if (existingUser) {
-            res.status(400).json({ error: "User with this email already exists!"})
+            return res.status(400).json({ error: "User with this email already exists!"})
         }
 
         // hash the password with bcrypt

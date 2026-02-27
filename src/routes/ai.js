@@ -147,7 +147,7 @@ router.get("/:id", authMiddleware, async(req, res) => {
             return res.status(403).json({ error: "Forbidden"})
         }
 
-        return res.json({
+        res.json({
             id: request.id,
             prompt: request.prompt,
             response: request.response,
@@ -156,7 +156,7 @@ router.get("/:id", authMiddleware, async(req, res) => {
 
     } catch(error) {
         console.error(error)
-        return res.status(500).json({ error: "Failed to fetch the request"})
+        res.status(500).json({ error: "Failed to fetch the request"})
     }
 })
 module.exports = router;
