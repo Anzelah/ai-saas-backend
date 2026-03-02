@@ -7,7 +7,7 @@ function authMiddleware (req, res, next) {
 
     // retrieve the token
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(501).json({ error: "Unauthorized!"})
+        return res.status(400).json({ error: "Missing token"})
     }
     const token = authHeader.split(" ")[1]
 
@@ -20,7 +20,7 @@ function authMiddleware (req, res, next) {
         req.userId = decoded.userId
         next()
     } catch(error) {
-        res.status(401).json({ error: "Invalid token!"})
+        res.status(401).json({ error: "Invalid or expired token"})
     }
 }
 

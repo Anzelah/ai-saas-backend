@@ -11,7 +11,7 @@ router.post("/generate", authMiddleware, async (req, res) => {
         // Check the user has sent a prompt
         const { prompt } = req.body
         if(!prompt || prompt.trim().length === 0) {
-            return res.json(400).res.json({ error: "Prompt is required"})
+            return res.json(400).res.json({ error: "Missing prompt"})
         }
         
         // find the user and subscriptions from db
@@ -20,7 +20,7 @@ router.post("/generate", authMiddleware, async (req, res) => {
             include: { subscription: true },
         })
         if (!user) {
-            return res.status(404).json({ error: "User not found"})
+            return res.status(401).json({ error: "User not found"})
         }
 
         // fetch the user's subscription
@@ -43,7 +43,7 @@ router.post("/generate", authMiddleware, async (req, res) => {
                 return res.status(500).json({ error: "AI Service Unavailable. Please try again later"})
             }
             if (error.message === "OPENAI_KEY_ERROR") {
-                return res.status(501).json({ error: "Something went wrong" })
+                return res.status(401).json({ error: "Invalid credentials" })
             }
             //unexpected error
             console.error("Unexpected Error:", error)
@@ -127,7 +127,7 @@ router.get("/:id", authMiddleware, async(req, res) => {
         const requestId = req.params.id
         //check if request id is provided
         if(!requestId) {
-            return res.status(400).json({ error: "This field can't be empty"})
+            return res.status(400).json({ error: "Missing required field"})
         }
 
         // fetch request from db
@@ -144,7 +144,7 @@ router.get("/:id", authMiddleware, async(req, res) => {
 
         // check if the logged in user owns this request
         if (request.userId !== req.userId) {
-            return res.status(403).json({ error: "Forbidden"})
+            return res.status(403).json({ error: "Unauthorized"})
         }
 
         res.json({

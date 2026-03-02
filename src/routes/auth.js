@@ -13,8 +13,11 @@ router.post("/signup", async (req, res) => {
         const { email, password } = req.body
 
         //Did they send both the email and password?
-        if (!email || !password) {
-            return res.status(400).json({ error: "Missing fields "})
+        if (!email) {
+            return res.status(400).json({ error: "Missing email"})
+        }
+        if (!password) {
+            return res.status(400).json({ error: "Missing password"})
         }
 
         //Does a user with this email exist?
@@ -22,7 +25,7 @@ router.post("/signup", async (req, res) => {
             where: { email },
         })
         if (existingUser) {
-            return res.status(400).json({ error: "User with this email already exists!"})
+            return res.status(400).json({ error: "User already exists"})
         }
 
         // hash the password with bcrypt
@@ -51,6 +54,12 @@ router.post("/signup", async (req, res) => {
   router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body
+        if (!email) {
+            return res.status(400).json({ error: "Missing email"})
+        }
+        if (!password) {
+            return res.status(400).json({ error: "Missing password"})
+        }
 
         // find user with that email
         const user = await prisma.user.findUnique({
@@ -58,14 +67,14 @@ router.post("/signup", async (req, res) => {
             include: { subscription: true },
         })
         if (!user) {
-            return res.status(400).json({ error: "User doesn't exist. Please sign up"})
+            return res.status(401).json({ error: "User not found. Please sign up"})
         }
 
         // check if password provided matched with one stored in db
         const dbPw = user.password
         const match = await bcrypt.compare(password, dbPw)
         if (!match) {
-            return res.status(400).json({ error: "Incorrect password. Try again!" })
+            return res.status(401).json({ error: "Invalid password" })
         }
 
         // generate a digital id/token
