@@ -2,17 +2,16 @@ const express = require("express")
 const { PrismaClient } = require("../generated")
 const authMiddleware = require("../middleware/auth")
 const { generateAIResponse } = require("../services/aiService")
+const validateMiddleware = require("../middleware/validate")
+const { generateSchema, querySchema, paramSchema } = require("../validators/aiSchema")
 
 const prisma = new PrismaClient()
 const router = express.Router()
 
-router.post("/generate", authMiddleware, async (req, res) => {
+router.post("/generate", authMiddleware, validateMiddleware(generateSchema), async (req, res) => {
     try { 
-        // Check the user has sent a prompt
+        // Check the user has sent a prompt. Validation middleware runs here
         const { prompt } = req.body
-        if(!prompt || prompt.trim().length === 0) {
-            return res.json(400).res.json({ error: "Missing prompt"})
-        }
         
         // find the user and subscriptions from db
         const user = await prisma.user.findUnique({
@@ -83,11 +82,11 @@ router.post("/generate", authMiddleware, async (req, res) => {
 })
 
 // Retrieve a users post history
-router.get("/history", authMiddleware, async (req, res) => {
+router.get("/history", authMiddleware, validateMiddleware(querySchema, "query"), async (req, res) => {
     try {
         // check if user requested a page/limit. otherwise, default to our values 
-        const page = parseInt(req.query.page) || 1
-        const limit = parseInt(req.query.limit) || 10
+        const { page, limit } = req.query
+
         // calculate the offset(skip value)
         const offset = (page - 1) * limit
         //Get total records number
@@ -122,13 +121,9 @@ router.get("/history", authMiddleware, async (req, res) => {
 })
 
 // Expand a specific response from listed history
-router.get("/:id", authMiddleware, async(req, res) => {
+router.get("/:id", authMiddleware, validateMiddleware(paramSchema, "params"), async(req, res) => {
     try {
         const requestId = req.params.id
-        //check if request id is provided
-        if(!requestId) {
-            return res.status(400).json({ error: "Missing required field"})
-        }
 
         // fetch request from db
         const request = await prisma.aIRequest.findUnique({

@@ -3,22 +3,16 @@ const express = require("express")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const { PrismaClient } = require("../generated")
+const validateMiddleware = require("../middleware/validate")
+const { signupSchema, loginSchema } = require("../validators/authSchema")
 
 const prisma = new PrismaClient() // use prisma to read and write data in your db
 const router = express.Router()
 
 // Creating the user
-router.post("/signup", async (req, res) => {
+router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
     try {
         const { email, password } = req.body
-
-        //Did they send both the email and password?
-        if (!email) {
-            return res.status(400).json({ error: "Missing email"})
-        }
-        if (!password) {
-            return res.status(400).json({ error: "Missing password"})
-        }
 
         //Does a user with this email exist?
         const existingUser = await prisma.user.findUnique( {
@@ -51,15 +45,9 @@ router.post("/signup", async (req, res) => {
 
   // LOG IN
 
-  router.post("/login", async (req, res) => {
+  router.post("/login", validateMiddleware(loginSchema), async (req, res) => {
     try {
         const { email, password } = req.body
-        if (!email) {
-            return res.status(400).json({ error: "Missing email"})
-        }
-        if (!password) {
-            return res.status(400).json({ error: "Missing password"})
-        }
 
         // find user with that email
         const user = await prisma.user.findUnique({
