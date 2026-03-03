@@ -7,4 +7,9 @@ const generateSchema = z.object({
     .max(2000, { message: "Prompt too long" })
 })
 
-// Route params validation
+// Route params validation(get/:id)
+const paramSchema = z.object({
+    id: z.uuid({ message: "Invalid id format" })
+})
+
+module.exports = { generateSchema, paramSchema }
