@@ -1,6 +1,7 @@
 const express = require("express")
 const { PrismaClient } = require("../generated")
 const authMiddleware = require("../middleware/auth")
+const AppError = require("../utils/AppError");
 
 const prisma = new PrismaClient()
 const router = express.Router()
@@ -14,7 +15,7 @@ router.get("/me", authMiddleware, async (req, res) => {
         })
 
         if (!user) {
-            return res.status(401).json({ error: "User not found" })
+            throw new AppError("User not found", 404)
         }
 
         res.json({
@@ -25,8 +26,7 @@ router.get("/me", authMiddleware, async (req, res) => {
             createdAt: user.createdAt,
         })
     } catch(error) {
-        console.error(error)
-        res.status(500).json({ error: "Server error" })
+        next(error)
     }
 })
 

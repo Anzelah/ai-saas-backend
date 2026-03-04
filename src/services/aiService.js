@@ -1,10 +1,11 @@
 require("dotenv").config()
 const OpenAI = require("openai")
+const AppError = require("../utils/AppError");
 
 // create an openai client and authenticate it using my api key
 const apiKey = process.env.OPENAI_API_KEY
-if (!apiKey) {
-    throw new Error("OPENAI_KEY_ERROR")
+if (!apiKey) { 
+    throw new AppError("Invalid api key", 500) 
 }
 const openai = new OpenAI({ apiKey })
 
@@ -22,8 +23,7 @@ async function generateAIResponse(prompt) {
         const openaiResponse = completion.choices[0].message.content
         return openaiResponse
     } catch (error) {
-        console.error("Openai error:", error)
-        throw new Error("AI_SERVICE_ERROR")
+        throw new AppError("AI service unavailable due to server configuration issue", 500)
     }
 }
 

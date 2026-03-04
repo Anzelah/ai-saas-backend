@@ -4,6 +4,7 @@ const authMiddleware = require("../middleware/auth")
 const { generateAIResponse } = require("../services/aiService")
 const validateMiddleware = require("../middleware/validate")
 const { generateSchema, querySchema, paramSchema } = require("../validators/aiSchemas")
+const AppError = require("../utils/AppError");
 
 const prisma = new PrismaClient()
 const router = express.Router()
@@ -19,38 +20,23 @@ router.post("/generate", authMiddleware, validateMiddleware(generateSchema), asy
             include: { subscription: true },
         })
         if (!user) {
-            return res.status(401).json({ error: "User not found"})
+            throw new AppError("User not found", 401)
         }
 
         // fetch the user's subscription
         const subscription = user.subscription
         if (!subscription) {
-            return res.status(404).json({ error: "Subscription not found"})
+            throw new AppError("Subscription not found", 404)
         }
 
         // check the credits available
         if (subscription.credits <= 0) {
-            return res.status(429).json({ error: "You hit your usage limit. Please wait for reset or upgrade your plan"})
+            throw new AppError("You hit your usage limit. Please wait for reset or upgrade your plan", 429)
         }
 
         // Call openAI
         let aiResponse
-        try {
-            aiResponse = await generateAIResponse(prompt)
-        } catch(error) {
-            if (error.message === "AI_SERVICE_ERROR") {
-                return res.status(500).json({ error: "AI Service Unavailable. Please try again later"})
-            }
-            if (error.message === "OPENAI_KEY_ERROR") {
-                return res.status(401).json({ error: "Invalid credentials" })
-            }
-            //unexpected error
-            console.error("Unexpected Error:", error)
-            res.status(500).json({ error: "Server error" })
-        }
-        // to add a thorough error handling logic according to error message received from ai
-        // might not need apikey error handling because it will automatically crash on project initialization
-        
+        aiResponse = await generateAIResponse(prompt)        
 
         // Save request in db for history + record for product usage
         await prisma.aIRequest.create({
@@ -70,14 +56,13 @@ router.post("/generate", authMiddleware, validateMiddleware(generateSchema), asy
         })
 
         //backend returns response to user
-        res.json({ 
+        res.status(200).res.json({ 
             response: aiResponse,
             credits: updateSubscriptions.credits,
         })
 
     } catch(error) {
-        console.error(error)
-        res.status(500).json({ error: "Server error" })
+        next(error)
     }
 })
 
@@ -115,8 +100,7 @@ router.get("/history", authMiddleware, validateMiddleware(querySchema, "query"),
             data: userHistory })
 
     } catch(error) {
-        console.error(error)
-        res.status(500).json({ error: "Failed to fetch history" })
+        next(error)
     }
 })
 
@@ -134,12 +118,12 @@ router.get("/:id", authMiddleware, validateMiddleware(paramSchema, "params"), as
 
         // check if request exists
         if (!request) {
-            return res.status(404).json({ error: "Request not found"})
+            throw new AppError("Request not found", 404)
         }
 
         // check if the logged in user owns this request
         if (request.userId !== req.userId) {
-            return res.status(403).json({ error: "Unauthorized"})
+            throw new AppError("Unauthorized", 403)
         }
 
         res.json({
@@ -150,8 +134,7 @@ router.get("/:id", authMiddleware, validateMiddleware(paramSchema, "params"), as
         })
 
     } catch(error) {
-        console.error(error)
-        res.status(500).json({ error: "Failed to fetch the request"})
+        next(error)
     }
 })
 module.exports = router;

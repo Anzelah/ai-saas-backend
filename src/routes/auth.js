@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken")
 const { PrismaClient } = require("../generated")
 const validateMiddleware = require("../middleware/validate")
 const { signupSchema, loginSchema } = require("../validators/authSchemas")
+const AppError = require("../utils/AppError");
 
 const prisma = new PrismaClient() // use prisma to read and write data in your db
 const router = express.Router()
@@ -19,7 +20,7 @@ router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
             where: { email },
         })
         if (existingUser) {
-            return res.status(400).json({ error: "User already exists"})
+            throw new AppError("User already exists", 401)
         }
 
         // hash the password with bcrypt
@@ -38,7 +39,7 @@ router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
         res.status(201).json({ message: "User created successfully!"})
 
     } catch(error) {
-        res.status(500).json({ error: "Something went wrong" })
+        next(error)
     }
   });
 
@@ -55,14 +56,14 @@ router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
             include: { subscription: true },
         })
         if (!user) {
-            return res.status(401).json({ error: "User not found. Please sign up"})
+            throw new AppError("User not found. Please sign up", 404)
         }
 
         // check if password provided matched with one stored in db
         const dbPw = user.password
         const match = await bcrypt.compare(password, dbPw)
         if (!match) {
-            return res.status(401).json({ error: "Invalid password" })
+            throw new AppError("Invalid password", 401)
         }
 
         // generate a digital id/token
@@ -75,7 +76,7 @@ router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
         res.json({ token })
 
     } catch(error) {
-        res.status(500).json({ error: "Something went wrong" })
+        next(error)
     }
 
   })
