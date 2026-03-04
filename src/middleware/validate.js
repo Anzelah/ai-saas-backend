@@ -1,4 +1,5 @@
 const { ZodError } = require("zod")
+const AppError = require("../utils/AppError");
 
 module.exports = (schema, property = "body") => (req, res, next) => {
     try {
@@ -6,9 +7,11 @@ module.exports = (schema, property = "body") => (req, res, next) => {
         next()   
     } catch(err) {
         if (err instanceof ZodError) {
-            return res.status(400).json({ error: err.issues[0].message })
+            const message = err.issues.map(issue => issue.message).join(", ");
+            console.log(message) //for debugging
+            return next(new AppError(message, 400, err.issues))
         }
-        next(err)// pass other errors to global errorhandler(tobeimplemented next)
+        next(err)
     }
 }
 
