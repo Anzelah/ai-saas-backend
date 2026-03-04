@@ -11,3 +11,5 @@ module.exports = (schema, property = "body") => (req, res, next) => {
         next(err)// pass other errors to global errorhandler(tobeimplemented next)
     }
 }
+
+// errors: err.issues.map(issue => ( field: issue.path[0], message: issue.message })) -> frontend friendly. replace once testing is done
