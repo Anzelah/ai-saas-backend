@@ -1,6 +1,6 @@
 const APP_ERROR_MESSAGE = {
     serverError: "Something went wrong. Please try again later.",
-  };
+};
   
 function errorMiddleware(err, req, res, next) {
     console.error(err) // log errors for internal debugging
