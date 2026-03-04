@@ -21,11 +21,11 @@ app.use("/auth", authRoutes)
 app.use("/user", userRoutes)
 app.use("/ai", aiRoutes)
 
-app.use(errorHandler)
-
 app.get("/", (req, res) => {
   res.json({ message: "AI SaaS Backend Running"})
 })
+
+app.use(errorHandler)
 
 
 app.listen(PORT, () => {
