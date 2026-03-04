@@ -13,7 +13,7 @@ async function generateAIResponse(prompt) {
     try {
         const completion  = await openai.responses.create({
             model: "gpt-4o-mini",
-            messages: [
+            input: [
                 { role: "system", content: "You are an expert entepreneur" },
                 { role: "user", content: prompt }
             ],

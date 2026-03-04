@@ -3,7 +3,7 @@ const { PrismaClient } = require("../generated")
 const authMiddleware = require("../middleware/auth")
 const { generateAIResponse } = require("../services/aiService")
 const validateMiddleware = require("../middleware/validate")
-const { generateSchema, querySchema, paramSchema } = require("../validators/aiSchema")
+const { generateSchema, querySchema, paramSchema } = require("../validators/aiSchemas")
 
 const prisma = new PrismaClient()
 const router = express.Router()

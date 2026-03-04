@@ -6,9 +6,7 @@ module.exports = (schema, property = "body") => (req, res, next) => {
         next()   
     } catch(err) {
         if (err instanceof ZodError) {
-            return res.status(400).json({
-                errors: err.errors.map(e => ({ field: e.path.join("."), message: e.message }))
-            })
+            return res.status(400).json({ error: err.issues[0].message })
         }
         next(err)// pass other errors to global errorhandler(tobeimplemented next)
     }

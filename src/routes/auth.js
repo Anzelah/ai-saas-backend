@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const { PrismaClient } = require("../generated")
 const validateMiddleware = require("../middleware/validate")
-const { signupSchema, loginSchema } = require("../validators/authSchema")
+const { signupSchema, loginSchema } = require("../validators/authSchemas")
 
 const prisma = new PrismaClient() // use prisma to read and write data in your db
 const router = express.Router()
