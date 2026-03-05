@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 5000
 const authRoutes = require("./routes/auth")
 const userRoutes = require("./routes/user")
 const aiRoutes = require("./routes/ai")
-const errorHandler = require(".src//middleware/errorHandler")
+const errorHandler = require("./middleware/errorHandler")
 
 const app = express()
 app.use(cors())

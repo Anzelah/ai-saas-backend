@@ -7,7 +7,7 @@ module.exports = (schema, property = "body") => (req, res, next) => {
         next()   
     } catch(err) {
         if (err instanceof ZodError) {
-            const message = err.issues.map(issue => issue.message).join(", ");
+            const message = err.issues.map(issue => issue.message).join(", and ");
             console.log(message) //for debugging
             return next(new AppError(message, 400, err.issues))
         }
