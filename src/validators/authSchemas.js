@@ -16,4 +16,12 @@ const loginSchema = z.object({
     password: z.string().min(8, { message: "Password can't be less than 8 characters" })
 })
 
-module.exports = { signupSchema, loginSchema }
+
+// checkout validation
+const checkoutSchema = z.object({
+    plan: z.enum(["starter", "pro", "enterprise"], {
+        errorMap: () => ({ message: "Invalid subscription plan selected" })
+      })
+  });
+
+module.exports = { signupSchema, loginSchema, checkoutSchema }
