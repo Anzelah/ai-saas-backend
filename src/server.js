@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 5000
 const authRoutes = require("./routes/auth")
 const userRoutes = require("./routes/user")
 const aiRoutes = require("./routes/ai")
+const stripeRoutes = require("./routes/stripe")
 const errorHandler = require("./middleware/errorHandler")
 
 const app = express()
@@ -20,6 +21,7 @@ app.use(limiter)
 app.use("/auth", authRoutes)
 app.use("/user", userRoutes)
 app.use("/ai", aiRoutes)
+app.use("/api/stripe", stripeRoutes)
 
 app.get("/", (req, res) => {
   res.json({ message: "AI SaaS Backend Running"})
