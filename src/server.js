@@ -21,7 +21,7 @@ app.use(limiter)
 app.use("/auth", authRoutes)
 app.use("/user", userRoutes)
 app.use("/ai", aiRoutes)
-app.use("/api/stripe", stripeRoutes)
+app.use("/stripe", stripeRoutes)
 
 app.get("/", (req, res) => {
   res.json({ message: "AI SaaS Backend Running"})
