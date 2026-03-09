@@ -26,28 +26,30 @@ router.post("/webhook", express.raw({ type: "application/json" }), async(req, re
     }
 
     // if payment had been made, and signature verified, update the db
-    if (event.type === "checkout.session.completed") {
-        const session = event.data.object
-        const userId = session.metadata.userId
-        const credit = parseInt(session.metadata.credits)
+    // use switch, case statements to handle various event types
+    switch(event.type) {
+        case "checkout.session.completed":
+            const session = event.data.object
+            const userId = session.metadata.userId
+            const credit = parseInt(session.metadata.credits)
 
-        // update user credits in the database
-        try {
-            const user = await prisma.user.update({
-                where: { id: userId },
-                data: {
-                    credits: { increment: credit }
-                }
-            })
-        } catch (error) {
-            console.error("Failed to update user credits:", error);
-            res.status(500).send("Database update failed")
+            // update user credits in the database
+            try {
+                const user = await prisma.user.update({
+                    where: { id: userId },
+                    data: { credits: { increment: credit } }
+                })
+            } catch (error) {
+                console.error("Failed to update user credits:", error);
+                res.status(500).send("Database update failed. Try again later")
+            }
+            console.log(`Added ${credits} credits to user ${userId}`)
+            break;
+        default:
+            // Unexpected event type
+            console.log(`Unhandled event type ${event.type}.`);
         }
-        console.log(`Added ${credits} credits to user ${userId}`)
-
-        // Sent status ok to Stripe otherwise it will retry the webhook later
-        res.status(200).json({ received: true })
-    }
+        res.send()
 })
 
 module.exports = router
