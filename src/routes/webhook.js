@@ -1,8 +1,10 @@
 require("dotenv").config()
 const express = require("express")
 const stripe = require("../lib/stripe")
+const { PrismaClient } = require("../generated")
 const AppError = require("../utils/AppError")
 
+const prisma = new PrismaClient()
 const router = express.Router()
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET
 
@@ -24,6 +26,20 @@ router.post("/webhook", express.raw({ type: "application/json" }), async(req, re
 
     // if payment had been made, and signature verified, update the db
     if (event.type === "checkout.session.completed") {
+        const session = event.data.object
+        const userId = session.metadata.userId
+        const credit = parseInt(session.metadata.credits)
 
+        // update user credits in the database
+        try {
+            const user = await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    credits: { increment: credit }
+                }
+            })
+        } catch (error) {
+            throw new AppError("Failed to update user credits", 500)
+        }
     }
 })
