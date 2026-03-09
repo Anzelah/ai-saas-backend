@@ -21,7 +21,7 @@ router.post("/webhook", express.raw({ type: "application/json" }), async(req, re
             endpointSecret
         )
     } catch(error) {
-        throw new AppError("Webhook signature verification failed", 500)
+        throw new AppError("Webhook signature verification failed", 400)
     }
 
     // if payment had been made, and signature verified, update the db
@@ -41,5 +41,8 @@ router.post("/webhook", express.raw({ type: "application/json" }), async(req, re
         } catch (error) {
             throw new AppError("Failed to update user credits", 500)
         }
+
+        // Sent status ok to Stripe otherwise it will retry the webhook later
+        res.status(200).json({ received: true })
     }
 })
