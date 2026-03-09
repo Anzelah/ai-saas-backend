@@ -8,10 +8,14 @@ const authRoutes = require("./routes/auth")
 const userRoutes = require("./routes/user")
 const aiRoutes = require("./routes/ai")
 const stripeRoutes = require("./routes/stripe")
+const webhookRoutes = require("./routes/webhook")
 const errorHandler = require("./middleware/errorHandler")
 
 const app = express()
 app.use(cors())
+
+app.use("/webhook", webhookRoutes)
+
 app.use(express.json())
 
 // rate limit all routes to 100 requests per 15 minutes

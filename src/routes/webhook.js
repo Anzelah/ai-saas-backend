@@ -46,3 +46,5 @@ router.post("/webhook", express.raw({ type: "application/json" }), async(req, re
         res.status(200).json({ received: true })
     }
 })
+
+module.exports = router
