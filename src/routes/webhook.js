@@ -10,18 +10,19 @@ const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET
 
 router.post("/webhook", express.raw({ type: "application/json" }), async(req, res) => {
     // get event data sent by stripe. contains id, type, and related stripe resources under data object
-    let event = req.body
+    let event;
 
     const sig = req.headers['stripe-signature']
     // verify the stripe signature against our secret
     try {
-        stripe.webhooks.constructEvent(
+        event = stripe.webhooks.constructEvent(
             req.body,
             sig,
             endpointSecret
         )
     } catch(error) {
-        throw new AppError("Webhook signature verification failed", 400)
+        console.error("Webhook signature verification failed:", error.message);
+        return res.status(400).send(`Webhook error:  ${error.message}`)
     }
 
     // if payment had been made, and signature verified, update the db
@@ -39,8 +40,10 @@ router.post("/webhook", express.raw({ type: "application/json" }), async(req, re
                 }
             })
         } catch (error) {
-            throw new AppError("Failed to update user credits", 500)
+            console.error("Failed to update user credits:", error);
+            res.status(500).send("Database update failed")
         }
+        console.log(`Added ${credits} credits to user ${userId}`)
 
         // Sent status ok to Stripe otherwise it will retry the webhook later
         res.status(200).json({ received: true })
