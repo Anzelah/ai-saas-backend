@@ -31,22 +31,23 @@ router.post("/webhook", express.raw({ type: "application/json" }), async(req, re
             const session = event.data.object
 
             const userId = session.metadata.userId
-            const credit = parseInt(session.metadata.credits)
-            console.log(session.metadata)
-            //console.log(userId)
-            //console.log(credit)
+            const plan = session.metadata.plan
+            const credits = parseInt(session.metadata.credits)
 
             // update user credits in the database
             try {
-                const user = await prisma.subscription.update({
+                await prisma.subscription.update({
                     where: { userId },
-                    data: { credits: { increment: credit } }
+                    data: { 
+                        credits: { increment: credits },
+                        plan 
+                    }
                 })
+                console.log(`Added ${credits} credits to user ${userId}`)
             } catch (error) {
                 console.error("Failed to update user credits:", error);
                 res.status(500).send("Database update failed. Try again later")
             }
-            console.log(`Added ${credits} credits to user ${userId}`)
             break;
         default:
             // Unexpected event type
