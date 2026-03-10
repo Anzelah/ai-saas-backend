@@ -29,13 +29,17 @@ router.post("/webhook", express.raw({ type: "application/json" }), async(req, re
     switch(event.type) {
         case "checkout.session.completed":
             const session = event.data.object
+
             const userId = session.metadata.userId
             const credit = parseInt(session.metadata.credits)
+            console.log(session.metadata)
+            //console.log(userId)
+            //console.log(credit)
 
             // update user credits in the database
             try {
-                const user = await prisma.user.update({
-                    where: { id: userId },
+                const user = await prisma.subscription.update({
+                    where: { userId },
                     data: { credits: { increment: credit } }
                 })
             } catch (error) {

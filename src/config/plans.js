@@ -1,6 +1,6 @@
 const plans = {
     starter: {
-        name: "Started Plan",
+        name: "Starter Plan",
         price: 1000,
         credits: 100
     },

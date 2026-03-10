@@ -14,7 +14,7 @@ const errorHandler = require("./middleware/errorHandler")
 const app = express()
 app.use(cors())
 
-app.use("/webhook", webhookRoutes)
+app.use("/api", webhookRoutes)
 
 app.use(express.json())
 
@@ -29,6 +29,10 @@ app.use("/stripe", stripeRoutes)
 
 app.get("/", (req, res) => {
   res.json({ message: "AI SaaS Backend Running"})
+})
+
+app.get("/success", (req, res) => {
+  res.json({ message: "Stripe Payment Successful"})
 })
 
 app.use(errorHandler)

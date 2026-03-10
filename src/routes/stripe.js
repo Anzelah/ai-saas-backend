@@ -8,12 +8,14 @@ const authMiddleware = require("../middleware/auth")
 const AppError = require("../utils/AppError")
 
 const router = express.Router()
-
 // create a checkout session
 router.post("/create-checkout-session", authMiddleware, validateMiddleware(checkoutSchema), async(req, res) => {
+    console.log("Here")
     try {
         const { plan } = req.body
         const selectedPlan = plans[plan]
+        console.log(selectedPlan)
+        console.log(req.userId)
  
         const session = await stripe.checkout.sessions.create({ // server to server communication with stripe
             mode: "payment",
