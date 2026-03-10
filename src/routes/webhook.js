@@ -2,7 +2,6 @@ require("dotenv").config()
 const express = require("express")
 const stripe = require("../lib/stripe")
 const { PrismaClient } = require("../generated")
-const AppError = require("../utils/AppError")
 
 const prisma = new PrismaClient()
 const router = express.Router()
