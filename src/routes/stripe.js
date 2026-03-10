@@ -13,7 +13,6 @@ router.post("/create-checkout-session", authMiddleware, validateMiddleware(check
     try {
         const { plan } = req.body
         const selectedPlan = plans[plan]
-        console.log('end of stripe')
  
         const session = await stripe.checkout.sessions.create({ // server to server communication with stripe
             mode: "payment",
