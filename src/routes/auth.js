@@ -56,14 +56,14 @@ router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
             include: { subscription: true },
         })
         if (!user) {
-            throw new AppError("User not found. Please sign up", 404)
+            throw new AppError("Incorrect email address or password", 404)
         }
 
         // check if password provided matched with one stored in db
         const dbPw = user.password
         const match = await bcrypt.compare(password, dbPw)
         if (!match) {
-            throw new AppError("Invalid password", 401)
+            throw new AppError("Incorrect email address or password", 401)
         }
 
         // generate a digital id/token
