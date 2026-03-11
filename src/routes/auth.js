@@ -57,7 +57,7 @@ router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
             include: { subscription: true },
         })
         if (!user) {
-            throw new AppError("Incorrect email address or password", 404)
+            throw new AppError("Incorrect email address or password", 401)
         }
 
         // check if password provided matched with one stored in db
@@ -82,7 +82,7 @@ router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
 
   })
 
-
+// user clicks forgot password
 router.post("/forgot-password", async(req, res) => {
     try {
         const { email } = req.body
@@ -111,9 +111,34 @@ router.post("/forgot-password", async(req, res) => {
     }
 })
 
-
+// reset their password
 router.post("/reset-password", validateMiddleware(resetSchema), async(req, res) => {
+    try { 
+        const { resetToken, newPassword } = req.body
+        const user = await prisma.user.findFirst({
+            where: { 
+                resetToken, 
+                resetTokenExpiry: { gt: new Date() }
+            }
+        })
 
+        if (!user) {
+            throw new AppError("Invalid or expired reset token", 400)
+        }
+
+        const hashedPw = await bcrypt.hash(newPassword, 10)
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPw,
+                resetToken: null,
+                resetTokenExpiry: null
+            }
+        })
+        res.json("Passoword reset succesful")
+    } catch (error) {
+        next(error)
+    }    
 })
 
 module.exports = router;
