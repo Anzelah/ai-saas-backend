@@ -9,7 +9,7 @@ const AppError = require("../utils/AppError");
 const prisma = new PrismaClient()
 const router = express.Router()
 
-router.post("/generate", authMiddleware, validateMiddleware(generateSchema), async (req, res) => {
+router.post("/generate", authMiddleware, validateMiddleware(generateSchema), async (req, res, next) => {
     try { 
         // Check the user has sent a prompt. Validation middleware runs here
         const { prompt } = req.body
@@ -67,7 +67,7 @@ router.post("/generate", authMiddleware, validateMiddleware(generateSchema), asy
 })
 
 // Retrieve a users post history
-router.get("/history", authMiddleware, validateMiddleware(querySchema, "query"), async (req, res) => {
+router.get("/history", authMiddleware, validateMiddleware(querySchema, "query"), async (req, res, next) => {
     try {
         // check if user requested a page/limit. otherwise, default to our values 
         const { page, limit } = req.query
@@ -105,7 +105,7 @@ router.get("/history", authMiddleware, validateMiddleware(querySchema, "query"),
 })
 
 // Expand a specific response from listed history
-router.get("/:id", authMiddleware, validateMiddleware(paramSchema, "params"), async(req, res) => {
+router.get("/:id", authMiddleware, validateMiddleware(paramSchema, "params"), async(req, res, next) => {
     try {
         const requestId = req.params.id
 

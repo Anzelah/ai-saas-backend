@@ -9,7 +9,7 @@ const AppError = require("../utils/AppError")
 
 const router = express.Router()
 // create a checkout session
-router.post("/create-checkout-session", authMiddleware, validateMiddleware(checkoutSchema), async(req, res) => {
+router.post("/create-checkout-session", authMiddleware, validateMiddleware(checkoutSchema), async(req, res, next) => {
     try {
         const { plan } = req.body
         const selectedPlan = plans[plan]

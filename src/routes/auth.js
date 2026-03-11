@@ -12,7 +12,7 @@ const prisma = new PrismaClient() // use prisma to read and write data in your d
 const router = express.Router()
 
 // Creating the user
-router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
+router.post("/signup", validateMiddleware(signupSchema), async (req, res, next) => {
     try {
         const { email, password } = req.body
 
@@ -47,7 +47,7 @@ router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
 
   // LOG IN
 
-  router.post("/login", validateMiddleware(loginSchema), async (req, res) => {
+  router.post("/login", validateMiddleware(loginSchema), async (req, res, next) => {
     try {
         const { email, password } = req.body
 
@@ -83,7 +83,7 @@ router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
   })
 
 // user clicks forgot password
-router.post("/forgot-password", async(req, res) => {
+router.post("/forgot-password", async(req, res, next) => {
     try {
         const { email } = req.body
         const user = await prisma.user.findUnique({
@@ -112,7 +112,7 @@ router.post("/forgot-password", async(req, res) => {
 })
 
 // reset their password
-router.post("/reset-password", validateMiddleware(resetSchema), async(req, res) => {
+router.post("/reset-password", validateMiddleware(resetSchema), async(req, res, next) => {
     try { 
         const { resetToken, newPassword } = req.body
         const user = await prisma.user.findFirst({
