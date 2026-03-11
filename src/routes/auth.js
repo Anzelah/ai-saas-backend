@@ -2,6 +2,7 @@ require("dotenv").config()
 const express = require("express")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const crypto = require("crypto")
 const { PrismaClient } = require("../generated")
 const validateMiddleware = require("../middleware/validate")
 const { signupSchema, loginSchema } = require("../validators/authSchemas")
@@ -81,4 +82,35 @@ router.post("/signup", validateMiddleware(signupSchema), async (req, res) => {
 
   })
 
+
+router.post("/forgot-password", async(req, res) => {
+    try {
+        const { email } = req.body
+        const user = await prisma.user.findUnique({
+            where: { email }
+        })
+
+        if (user) {
+            const resetToken = crypto.randomBytes(32).toString("hex")
+            const expiry = new Date(Date.now() + 15 * 60 * 1000)
+            
+            await prisma.user.update({
+                where: { email },
+                data: {
+                    resetToken,
+                    resetTokenExpiry: expiry
+                }
+            })
+        }
+
+        // return the same message whether the account exists or not
+        res.json({
+            message: "If the email exists, a reset link has been sent"
+          })
+    } catch(error) {
+        next(error)
+    }
+
+
+})
   module.exports = router;
