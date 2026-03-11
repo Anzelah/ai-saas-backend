@@ -1,19 +1,25 @@
 const { z } = require("zod")
 
+// Create reusable password schema
+const passwordSchema = z.string()
+    .min(8, { message: "Password must be at least 8 characters" })
+    .max(100, { message: "Password too long" })
+    .refine((val) => /[A-Z]/.test(val), { message: "Password must contain at least one uppercase letter" })
+    .refine((val) => /[!@#$%^&*()?:{}|<>]/.test(val), { message: "Password must contain at least one special character: !@#$%^&*()?:{}|<></>" })
+
+// Create a reusable email Schema
+const emailSchema = z.email({ message: "Invalid email format" })
+
 // signup validation
 const signupSchema = z.object({
-    email: z.email({ message: "Invalid email format"}),
-    password: z.string()
-        .min(8, { message: "Password must be at least 8 characters" })
-        .max(100, { message: "Password too long" })
-        .refine((val) => /[A-Z]/.test(val), { message: "Password must contain at least one uppercase letter" })
-        .refine((val) => /[!@#$%^&*()?:{}|<>]/.test(val), { message: "Password must contain at least one special character: !@#$%^&*()?:{}|<></>" })
+    email: emailSchema,
+    password: passwordSchema
 })
 
 // login validation
 const loginSchema = z.object({
-    email: z.email({ message: "Invalid email format" }),
-    password: z.string().min(8, { message: "Password can't be less than 8 characters" })
+    email: emailSchema,
+    password: z.string().min(1, { message: "Password can't be empty" })
 })
 
 
@@ -24,4 +30,14 @@ const checkoutSchema = z.object({
       })
   });
 
-module.exports = { signupSchema, loginSchema, checkoutSchema }
+// reset password schema
+const resetSchema = z.object({
+    token: z.string().min(1),
+    newPassword: passwordSchema,
+    confirmPassword: z.string()
+}).refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"]
+})
+
+module.exports = { signupSchema, loginSchema, checkoutSchema, resetSchema }

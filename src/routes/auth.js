@@ -101,16 +101,19 @@ router.post("/forgot-password", async(req, res) => {
                     resetTokenExpiry: expiry
                 }
             })
+            // In production you would send email here
+            console.log("Reset token:", resetToken)
         }
-
         // return the same message whether the account exists or not
-        res.json({
-            message: "If the email exists, a reset link has been sent"
-          })
+        res.json({ message: "If the email exists, a reset link has been sent" })
     } catch(error) {
         next(error)
     }
+})
 
+
+router.post("/reset-password", async(req, res) => {
 
 })
-  module.exports = router;
+
+module.exports = router;
