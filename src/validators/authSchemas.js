@@ -28,7 +28,12 @@ const checkoutSchema = z.object({
     plan: z.enum(["starter", "pro", "enterprise"], {
         errorMap: () => ({ message: "Invalid subscription plan selected" })
       })
-  });
+});
+
+//forgot password schema
+const forgotPwSchema = z.object({
+    email: emailSchema
+})
 
 // reset password schema
 const resetSchema = z.object({
@@ -40,4 +45,4 @@ const resetSchema = z.object({
     path: ["confirmPassword"]
 })
 
-module.exports = { signupSchema, loginSchema, checkoutSchema, resetSchema }
+module.exports = { signupSchema, loginSchema, checkoutSchema, forgotPwSchema, resetSchema }
