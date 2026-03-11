@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken")
 const crypto = require("crypto")
 const { PrismaClient } = require("../generated")
 const validateMiddleware = require("../middleware/validate")
-const { signupSchema, loginSchema } = require("../validators/authSchemas")
+const { signupSchema, loginSchema, resetSchema } = require("../validators/authSchemas")
 const AppError = require("../utils/AppError");
 
 const prisma = new PrismaClient() // use prisma to read and write data in your db
@@ -112,7 +112,7 @@ router.post("/forgot-password", async(req, res) => {
 })
 
 
-router.post("/reset-password", async(req, res) => {
+router.post("/reset-password", validateMiddleware(resetSchema), async(req, res) => {
 
 })
 
