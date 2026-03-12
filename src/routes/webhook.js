@@ -40,7 +40,7 @@ router.post("/webhook", express.raw({ type: "application/json" }), async(req, re
                     where: { userId },
                     data: { 
                         credits: { increment: credits },
-                        plan 
+                        plan: plan.toUpperCase()
                     }
                 })
                 console.log(`Added ${credits} credits to user ${userId}`)
