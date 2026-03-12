@@ -14,8 +14,11 @@ const errorHandler = require("./middleware/errorHandler")
 const app = express()
 app.use(cors())
 
-app.use("/api", webhookRoutes)
+//app.use(cors({
+ // origin: process.env.FRONTEND_URL
+//}))
 
+app.use("/api", webhookRoutes)
 app.use(express.json())
 
 // rate limit all routes to 100 requests per 15 minutes
