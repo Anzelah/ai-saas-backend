@@ -114,7 +114,9 @@ router.post("/forgot-password", validateMiddleware(forgotPwSchema), async(req, r
 // reset their password
 router.post("/reset-password", validateMiddleware(resetSchema), async(req, res, next) => {
     try { 
+        console.log("Here")
         const { resetToken, newPassword } = req.body
+        console.log(resetToken)
         const user = await prisma.user.findFirst({
             where: { 
                 resetToken, 
@@ -135,7 +137,7 @@ router.post("/reset-password", validateMiddleware(resetSchema), async(req, res, 
                 resetTokenExpiry: null
             }
         })
-        res.json("Passoword reset succesful")
+        res.status(200).json({ message: "Password reset succesful" })
     } catch (error) {
         next(error)
     }    
