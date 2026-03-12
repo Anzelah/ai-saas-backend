@@ -12,11 +12,9 @@ const webhookRoutes = require("./routes/webhook")
 const errorHandler = require("./middleware/errorHandler")
 
 const app = express()
-app.use(cors())
-
-//app.use(cors({
- // origin: process.env.FRONTEND_URL
-//}))
+app.use(cors({
+  origin: process.env.FRONTEND_URL
+}))
 
 app.use("/api", webhookRoutes)
 app.use(express.json())

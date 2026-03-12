@@ -21,7 +21,7 @@ router.post("/signup", validateMiddleware(signupSchema), async (req, res, next) 
             where: { email },
         })
         if (existingUser) {
-            throw new AppError("An account with this may exist. Try logging in or resetting your password", 401)
+            throw new AppError("An account with this email may exist. Try logging in or resetting your password", 401)
         }
 
         // hash the password with bcrypt
