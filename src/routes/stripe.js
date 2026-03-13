@@ -26,8 +26,8 @@ router.post("/create-checkout-session", authMiddleware, validateMiddleware(check
                 },
                 quantity: 1,
                 }],
-            success_url: `${process.env.FRONTEND_URL}/success`,
-            cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+            success_url: `${process.env.FRONTEND_URL}/dashboard?stripe=success`,
+            cancel_url: `${process.env.FRONTEND_URL}/dashboard?stripe=cancel`,
             metadata: {
                 userId: req.userId,
                 plan,
