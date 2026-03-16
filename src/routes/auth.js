@@ -101,8 +101,11 @@ router.post("/forgot-password", validateMiddleware(forgotPwSchema), async(req, r
                     resetTokenExpiry: expiry
                 }
             })
-            // In production you would send email here
-            console.log("Reset token:", resetToken)
+
+            // Instead of sending email, return token in response for demo
+            return res.json({ message: "If the email exists, a reset link has been sent",
+                demoResetToken: resetToken // ✅ frontend can use this
+            })
         }
         // return the same message whether the account exists or not
         res.json({ message: "If the email exists, a reset link has been sent" })
