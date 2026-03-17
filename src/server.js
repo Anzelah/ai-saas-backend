@@ -13,7 +13,7 @@ const errorHandler = require("./middleware/errorHandler")
 
 const app = express()
 app.use(cors({
-  origin: process.env.FRONTEND_URL
+  origin: process.env.FRONTEND_URI
 }))
 
 app.use("/api", webhookRoutes)
