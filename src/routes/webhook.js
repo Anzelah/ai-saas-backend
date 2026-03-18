@@ -18,7 +18,7 @@ router.post("/webhook", express.raw({ type: "application/json" }), async(req, re
             req.body,
             sig,
             endpointSecret
-        )
+        ) // debug here
     } catch(error) {
         console.error("Webhook signature verification failed:", error.message);
         return res.status(400).send(`Webhook error:  ${error.message}`)
