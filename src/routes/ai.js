@@ -9,7 +9,6 @@ const AppError = require("../utils/AppError");
 const prisma = new PrismaClient()
 const router = express.Router()
 
-console.log("First")
 router.post("/generate", authMiddleware, validateMiddleware(generateSchema), async (req, res, next) => {
     try { 
         // Check the user has sent a prompt. Validation middleware runs here
