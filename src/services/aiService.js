@@ -1,29 +1,46 @@
 require("dotenv").config()
-const OpenAI = require("openai")
+const axios = require("axios");
 const AppError = require("../utils/AppError");
 
-// create an openai client and authenticate it using my api key
-const apiKey = process.env.OPENAI_API_KEY
-if (!apiKey) { 
-    throw new AppError("Invalid api key", 500) 
+const HF_API_KEY = process.env.HF_API_KEY; 
+if (!HF_API_KEY) {
+  throw new AppError("Invalid api key", 500);
 }
-const openai = new OpenAI({ apiKey })
 
-// Call openai apito generate a response based on the prompt provided
-async function generateAIResponse(prompt) {
+async function generateAIResponse(userPrompt) {
     try {
-        const completion  = await openai.responses.create({
-            model: "gpt-4o-mini",
-            input: [
-                { role: "system", content: "You are an expert entepreneur" },
-                { role: "user", content: prompt }
-            ],
-        })
-        // extract and return the response to the route
-        const openaiResponse = completion.choices[0].message.content
-        return openaiResponse
+        // Prepare the full instruction for the model
+        const promptText = `You are a professional cover letter writer. Write a polished, concise cover letter for the following job description: ${userPrompt}. Make the tone confident, concise, and tailored to the role. Limit to 200–300 words.`;
+
+        // Call Hugging Face Inference API
+        const response = await axios.post(
+        "https://api-inference.huggingface.co/models/google/flan-t5-large",
+        { inputs: promptText },
+        { headers: {
+            Authorization: `Bearer ${HF_API_KEY}`,
+            "Content-Type": "application/json",
+            },
+        });
+
+        // Hugging Face sometimes returns an array of objects with generated_text
+        let aiOutput = "";
+        if (response.data && Array.isArray(response.data)) {
+            aiOutput = response.data[0]?.generated_text || "";
+        } else if (response.data?.generated_text) {
+            aiOutput = response.data.generated_text;
+        }
+
+        if (!aiOutput) {
+            throw new Error("No text returned from Hugging Face");
+        }
+
+        return aiOutput;
     } catch (error) {
-        throw new AppError("AI service unavailable due to server configuration issue", 500)
+        console.error("Hugging Face AI Error:", error.response?.data || error.message);
+        throw new AppError(
+        "AI service unavailable due to server configuration issue",
+        500
+        );
     }
 }
 
