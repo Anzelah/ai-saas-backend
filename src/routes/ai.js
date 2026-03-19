@@ -72,6 +72,10 @@ router.get("/history", authMiddleware, validateMiddleware(querySchema, "query"),
     try {
         // check if user requested a page/limit. otherwise, default to our values 
         const { page, limit } = req.query
+        console.log(page)
+        console.log(limit)
+        console.log(typeof page)
+        console.log(typeof limit)
 
         // calculate the offset(skip value)
         const offset = (page - 1) * limit
