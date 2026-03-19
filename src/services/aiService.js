@@ -20,9 +20,7 @@ async function generateAIResponse(userPrompt) {
           content: `Write a tailored cover letter for this job:\n\n${userPrompt}`,
         },
       ];
-  
-      console.log("Before calling HF");
-  
+
       const response = await axios.post(
         "https://router.huggingface.co/v1/chat/completions",
         {
@@ -37,8 +35,6 @@ async function generateAIResponse(userPrompt) {
         }
       );
   
-      console.log("After calling HF", response.data);
-  
       // Correctly read the AI output
       const aiOutput =
         response.data?.choices?.[0]?.message?.content || "";
@@ -50,7 +46,7 @@ async function generateAIResponse(userPrompt) {
       return aiOutput;
     } catch (error) {
       console.error( "Hugging Face AI Error:", error.response?.data || error.message );
-      throw AppError("AI service unavailable due to server configuration issue", 500);
+      throw new AppError("AI service unavailable due to server configuration issue", 500);
     }
   }
 
