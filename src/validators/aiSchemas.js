@@ -4,7 +4,7 @@ const { z } = require("zod")
 const generateSchema = z.object({
     prompt: z.string()
         .min(5, { message: "Prompt must be atleast 5 characters" })
-        .max(2000, { message: "Prompt too long" })
+        .max(5000, { message: "Prompt too long" })
 })
 
 // Req query validation
