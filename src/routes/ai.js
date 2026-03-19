@@ -37,7 +37,6 @@ router.post("/generate", authMiddleware, validateMiddleware(generateSchema), asy
         }
 
         // Call openAI
-        console.log("Before api call")
         let aiResponse
         aiResponse = await generateAIResponse(prompt)        
 
@@ -59,7 +58,7 @@ router.post("/generate", authMiddleware, validateMiddleware(generateSchema), asy
         })
 
         //backend returns response to user
-        res.status(200).res.json({ 
+        res.status(200).json({ 
             response: aiResponse,
             credits: updateSubscriptions.credits,
         })
