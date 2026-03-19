@@ -4,7 +4,9 @@ const AppError = require("../utils/AppError");
 
 const HF_API_KEY = process.env.HF_API_KEY; 
 if (!HF_API_KEY) {
-  throw new AppError("Invalid api key", 500);
+    console.log('here')
+    console.log("HF-API-KEY")
+    throw new AppError("Invalid api key", 500);
 }
 
 async function generateAIResponse(userPrompt) {

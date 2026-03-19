@@ -9,10 +9,12 @@ const AppError = require("../utils/AppError");
 const prisma = new PrismaClient()
 const router = express.Router()
 
+console.log("First")
 router.post("/generate", authMiddleware, validateMiddleware(generateSchema), async (req, res, next) => {
     try { 
         // Check the user has sent a prompt. Validation middleware runs here
         const { prompt } = req.body
+        console.log(prompt)
         
         // find the user and subscriptions from db
         const user = await prisma.user.findUnique({
@@ -35,6 +37,7 @@ router.post("/generate", authMiddleware, validateMiddleware(generateSchema), asy
         }
 
         // Call openAI
+        console.log("Before api call")
         let aiResponse
         aiResponse = await generateAIResponse(prompt)        
 

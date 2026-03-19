@@ -20,7 +20,7 @@ function authMiddleware (req, res, next) {
         req.userId = decoded.userId
         next()
     } catch(error) {
-        if (err.name === "TokenExpiredError") {
+        if (error.name === "TokenExpiredError") {
             return res.status(401).json({ error: "Session expired. Please log in again.", expired: true })// optional flag your frontend can use
         }    
         res.status(401).json({ error: "Invalid Token"})
