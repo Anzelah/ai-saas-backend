@@ -13,9 +13,9 @@ const errorHandler = require("./middleware/errorHandler")
 
 const app = express()
 const corsOptions = {
-  origin: "https://prismatic-dasik-e44042.netlify.app/", // replace with your deployed URL
+  origin: process.env.FRONTEND_URL,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true, // if you use cookies/auth headers
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
