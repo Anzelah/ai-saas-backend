@@ -12,8 +12,13 @@ const webhookRoutes = require("./routes/webhook")
 const errorHandler = require("./middleware/errorHandler")
 
 const app = express()
-app.use(cors()) // temporarily debug
+const corsOptions = {
+  origin: "https://prismatic-dasik-e44042.netlify.app/", // replace with your deployed URL
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // if you use cookies/auth headers
+};
 
+app.use(cors(corsOptions));
 app.use("/api", webhookRoutes)
 app.use(express.json())
 
