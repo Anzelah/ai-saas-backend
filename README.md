@@ -1,4 +1,5 @@
-# 🚀 AI Cover Letter Generator (Full-Stack SaaS)
+# 🚀 AI Cover Letter Generator (Full-Stack SaaS) 
+[Live Demo](https://prismatic-dasik-e44042.netlify.app)
 
 A full-stack AI-powered web application that generates tailored, professional cover letters from job descriptions in seconds.
 
@@ -112,14 +113,5 @@ Built to simulate a real-world SaaS product, this project includes authenticatio
 
 ---
 
-## ⚙️ Environment Variables
 
-Create a `.env` file in the backend:
-
-```env
-DATABASE_URL=
-JWT_SECRET=
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-HF_API_KEY=
-FOLDER_PATH=
+## [Try it Live](https://prismatic-dasik-e44042.netlify.app/)
